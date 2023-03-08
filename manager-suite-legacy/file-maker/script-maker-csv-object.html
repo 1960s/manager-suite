@@ -1,0 +1,327 @@
+<button onclick=run()>texthere</button>
+<br>
+<span id="nut">texthere</span>
+
+
+<script>
+
+  function run(){
+
+function firstLetterUppercase(str){
+let firstLetter = str[0].toUpperCase()
+let restOfWord = str.slice(1)
+let stringFinal = `${firstLetter}${restOfWord}`
+return stringFinal
+}
+
+
+//convert horizontal csv
+function csvHorizontalSplitter(cvsStr) {
+  cvsStr = cvsStr.split("\n")
+  cvsStr.forEach(function (el, i) {
+    cvsStr[i] = el.split("\t")
+  })
+  return cvsStr
+}
+
+
+//convert horizontal csv to js object
+function csvHorizontal(csv){
+let pill = {}
+let arr2 = []
+for (let i = 0; i < csv.length; i++) {
+  let arr = []
+  for (let j = 0; j < csv[i].length; j += 2) {
+
+    if (i == 0 && csv[i][j]) {
+      pill[csv[i][j]] = {}
+    } else if (csv[i][j]) {
+      pill[csv[0][j]][csv[i][j]] = csv[i][j + 1]
+    }
+  }
+
+  arr2.push(arr)
+}
+
+return pill
+}
+
+
+//convert vertical csv
+function csvVerticalSplitter(cvsStr) {
+    cvsStr = cvsStr.split("|")
+  /**/cvsStr.forEach(function (el, i) {
+        cvsStr[i] = el.split("\n")
+
+  /**/cvsStr[i].forEach(function (el2, j) {
+            cvsStr[i][j] = el2.split("\t")
+            cvsStr[i][j] = cvsStr[i][j].filter(el => el.length > 1)
+        })
+
+        cvsStr[i] = cvsStr[i].filter(el => el.length > 0)
+    })
+    return cvsStr
+}
+
+
+//convert vertical csv to js object
+function csvVertical(csv) {
+    let pill = {}
+    let arr2 = []
+    for (let i = 0; i < csv.length; i++) {
+        let arr = []
+        for (let j = 0; j < csv[i].length; j++) {
+
+            if (j == 0 && csv[i][j]) {
+                arr.push(`function ${csv[i][0][0]}(${csv[i][0][1]}){`)
+            } else if (csv[i].length - 1 == j) {
+                arr.push(`${csv[i][j][0]}
+}`)
+            } else {
+                arr.push(`let ${csv[i][j][0]} = (${csv[i][j][1]})`)
+            }
+        }
+        pill[csv[i][0][0]] = arr.join("\n")
+    }
+
+    return pill
+}
+
+
+//convert full csv to js object
+function csvFullSplitter(str) {
+    let arr = str.split("\n")
+    //convert full csv to js object
+    var jsonObj = [];
+    var headers = arr[0].split('\t');
+    for (var i = 1; i < arr.length; i++) {
+        var data = arr[i].split('\t');
+        var obj = {};
+        for (var j = 0; j < data.length; j++) {
+            obj[headers[j]] = data[j];
+        }
+        jsonObj.push(obj);
+    }
+
+    return obj//jsonObj 
+}
+
+    let full = `radius	height	strutA	strutB	perimeter	baseArea
+diameter*0.5	radius	(radius*0.54653)	(radius*0.61803)	strutB*10	10 * (strutB*strutB) / ( 4 * Math.tan( (Math.PI/10) ) )`
+    
+
+
+
+let horizon = `input		constants		buttons
+diameter		fractionLimit	32	imperial
+conduitHub		footToInch	12	metric
+pipeDiameter		cmToMm	10	custom
+		meterToCm	100	`
+
+    let vertical = `convertDecimalToWhole	fullNum, supraNum, conversionNum
+decimalNum	fullNum - supraNum
+return decimalNum * conversionNum	 
+|	
+imperialFraction	strutInchDecimal, strutInch
+strutFractionDecimal	strutInchDecimal - strutInch
+strutFractionDecimalRaw	strutFractionDecimal * fractionLimit 
+return  Math.round(strutFractionDecimalRaw)	
+|	
+reduceToNumerator	numerator, denominator 
+gcd	function gcd(a,b){return b ? gcd(b, a%b) : a;}
+gcdFinal	gcd(numerator,denominator)
+return [numerator/gcdFinal];	
+|	
+reduceToDenomenator	numerator, denominator 
+gcd	function gcd(a,b){return b ? gcd(b, a%b) : a;}
+gcdFinal	gcd(numerator,denominator)
+return [denominator/gcdFinal];	
+|	
+convertCustom	strut, conduitHub = 0
+strutFinal	conduitHub + strut
+return strutFinal	
+|	
+convertImperial	strut, conduitHub = 0
+conduitHubImperial	conduitHub/12
+strutImperial	conduitHubImperial + strut
+strutFoot	Math.trunc(strutImperial)
+strutInchDecimal	convertDecimalToWhole(strutImperial, strutFoot, footToInch)
+strutInch	Math.trunc(strutInchDecimal)
+strutFraction	imperialFraction(strutInchDecimal, strutInch)
+strutNumerator	reduceToNumerator(strutFraction, fractionLimit)
+strutDenomenator	reduceToDenomenator(strutFraction, fractionLimit)
+strutFinal	\`\${strutFoot} feet \${strutInch} inches \${strutNumerator}/\${strutDenomenator}\`
+return strutFinal	
+|	
+convertMetric	strut, conduitHub = 0
+conduitHubMetric	conduitHub/1000
+strutMetric	conduitHubMetric + strut
+strutMeter	Math.trunc(strutMetric)
+strutCmDecimal	convertDecimalToWhole(strutMetric, strutMeter, meterToCm)
+strutCm	Math.trunc(strutCmDecimal)
+strutMmDecimal	convertDecimalToWhole(strutCmDecimal, strutCm, cmToMm)
+strutMm	Math.round(strutMmDecimal)
+strutFinal	\`\${strutMeter} meters \${strutCm} cm \${strutMm} mm\`
+return strutFinal	`
+
+
+
+let csvPage = csvHorizontalSplitter(horizon)
+let page = csvHorizontal(csvPage)
+
+let csvFunctions = csvVerticalSplitter(vertical)
+let functions = csvVertical(csvFunctions)
+
+let geodesic = csvFullSplitter(full)
+
+
+    let nut = document.getElementById("nut")
+let arr = []
+
+
+
+//HTML INPUTS
+for (let [key, value] of Object.entries(page.input)) {
+      arr.push(`${firstLetterUppercase(key)}: <input id="${key}Input" type="number" min="0" 
+placeholder="enter ${key} here" 
+step="1"> <br>`)
+}
+
+arr.push("<br>")
+
+//BUTTONS
+for (let [key, value] of Object.entries(page.buttons)) {
+      key == "imperial"
+      ? arr.push(`<input type="radio" name="lengthStandard" id="${key}Radio" checked>${key}`)
+      : arr.push(`<input type="radio" name="lengthStandard" id="${key}Radio">${key}`)
+}
+
+
+arr.push("<br>")
+    //HTML OUTPUTS
+for (let [key, value] of Object.entries(geodesic)) {
+      arr.push(`${firstLetterUppercase(key)}: <input id="${key}Input" type="text" readonly> <br>`)
+}
+
+
+    
+
+arr.push("<br>")
+    arr.push("<script>")
+    arr.push(`
+document.addEventListener('DOMContentLoaded', WireUpEvents);
+
+function WireUpEvents() {`)
+
+//EVENT LISTENERS
+for (let [key, value] of Object.entries(page.input)) {
+      arr.push(`${key}Input.addEventListener('input', geodesicCalc);`)
+}
+
+    arr.push(`}`)
+
+    arr.push("\n")
+
+    arr.push(`let reseter = document.querySelectorAll('input[name="lengthStandard"]')
+
+    reseter.forEach(function(userItem) {
+      userItem.addEventListener('change', geodesicCalc)
+    });`)
+    
+    
+    arr.push(`function geodesicCalc() {`)
+    arr.push("\n")
+
+    //CONSTANTS DEFINITION
+for (let [key, value] of Object.entries(page.constants)) {
+arr.push(`let ${key} = ${value}`)
+}
+
+    arr.push("\n")
+
+
+    //FUNCTION DEFINITION
+for (let [key, value] of Object.entries(functions)) {
+      arr.push(`${value}`)
+arr.push("\n")
+}
+
+    
+
+
+    //JS INPUT DEFINITION
+for (let [key, value] of Object.entries(page.input)) {
+      arr.push(`let ${key}Input = document.getElementById('${key}Input');`)
+}
+
+    arr.push("\n")
+
+    //JS OUTPUT DEFINITION
+for (let [key, value] of Object.entries(geodesic)) {
+      arr.push(`let ${key}Input = document.getElementById('${key}Input');`)
+}
+
+
+    arr.push("\n")
+
+
+    //JS INPUT VARIABLE DEFINITION    
+for (let [key, value] of Object.entries(page.input)) {
+      arr.push(`let ${key} = 1 * ${key}Input.value`)
+}
+
+    arr.push("\n")
+
+    //JS MIDPUT VARIABLE DEFINITION    
+for (let [key, value] of Object.entries(geodesic)) {
+      arr.push(`let ${key} = ${value}`)
+}
+
+    arr.push("\n")
+
+
+let counter = 0
+    //JS OUTPUT VARIABLE DEFINITION  
+for (let [key, value] of Object.entries(page.buttons)) {
+
+counter == 0
+? arr.push(`if(${key}Radio.checked){`)
+: arr.push(`else if(${key}Radio.checked){`)
+counter++
+
+
+for (let [geo, value] of Object.entries(geodesic)) {
+arr.push(`${geo}Input.value = convert${firstLetterUppercase(key)}(${geo}, conduitHub)`)
+}
+
+arr.push(`}`)
+arr.push("\n")
+}
+  
+   
+
+      
+
+
+    
+
+    arr.push("\n")
+
+
+
+
+    arr.push(`}`)
+    arr.push("<\/script>")
+/*
+
+*/
+    nut.innerText = arr.join("\n")
+
+
+  }
+
+
+
+
+
+</script>

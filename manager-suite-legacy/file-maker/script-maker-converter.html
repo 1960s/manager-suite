@@ -1,0 +1,180 @@
+<button onclick=run()>texthere</button>
+<br>
+<span id="nut">texthere</span>
+
+<script>
+
+  function run(){
+
+    let vertical = `firstLetterUppercase	str
+firstLetter	str[0].toUpperCase()
+restOfWord	str.slice(1)
+stringFinal	\`\${firstLetter}\${restOfWord}\`
+return	stringFinal
+|	
+toLowerCase	str
+stringFinal	str.toLowerCase()
+return	stringFinal
+|	
+toUpperCase	str
+stringFinal	str.toUpperCase()
+return	stringFinal
+|	
+stringWrapper	str
+stringFinal	\`"\${str}"\`
+return	stringFinal
+`
+    //convert vertical csv
+    function csvVerticalSplitter(cvsStr) {
+      cvsStr = cvsStr.split("|")
+      /**/cvsStr.forEach(function (el, i) {
+        cvsStr[i] = el.split("\n")
+
+        /**/cvsStr[i].forEach(function (el2, j) {
+          cvsStr[i][j] = el2.split("\t")
+          cvsStr[i][j] = cvsStr[i][j].filter(el => el.length > 1)
+        })
+
+        cvsStr[i] = cvsStr[i].filter(el => el.length > 0)
+      })
+      return cvsStr
+    }
+
+    //convert vertical csv to js object
+    function csvVertical(csv) {
+      let pill = {}
+      let arr2 = []
+      for (let i = 0; i < csv.length; i++) {
+        let arr = []
+        for (let j = 0; j < csv[i].length; j++) {
+
+          if (j == 0 && csv[i][j]) {
+            arr.push(`function ${csv[i][0][0]}(${csv[i][0][1]}){`)
+          } else if (csv[i].length - 1 == j) {
+            arr.push(`${csv[i][j][0]} ${csv[i][j][1]}\n}`)
+          } else {
+            arr.push(`let ${csv[i][j][0]} = ${csv[i][j][1]}`)
+          }
+        }
+        pill[csv[i][0][0]] = arr.join("\n")
+      }
+
+      return pill
+    }
+    /*
+
+*/
+
+    let csvFunctions = csvVerticalSplitter(vertical)
+    let functions = csvVertical(csvFunctions)
+
+
+
+
+    let arr = []
+
+    arr.push(`    
+<textarea rows="40" cols="100" id="input"></textarea>
+<textarea rows="40" cols="100" id="output"></textarea>
+`)
+
+    arr.push(`    
+<br>
+<button onclick="convert()">convert</button>
+<button onclick="reset()">reset</button>
+<br>
+`)
+
+
+
+
+    //HTML INPUTS
+    for (let [key, value] of Object.entries(functions)) {
+      arr.push(`<input name="selector" type="radio" id="${key}Radio">${key}`)
+    }
+
+    arr.push("<br>")
+    arr.push("\n")
+
+    arr.push("<script>")
+
+    arr.push(`  
+function reset(){
+input.value = ""
+output.value = ""
+}
+`)
+
+
+    arr.push(`    
+function convert(){
+`)
+
+    //FUNCTION DEFINITION
+    for (let [key, value] of Object.entries(functions)) {
+      arr.push(`${value}`)
+      arr.push("\n")
+    }
+
+
+    //JS INPUT DEFINITION
+    for (let [key, value] of Object.entries(functions)) {
+      arr.push(`let ${key}Radio = document.getElementById('${key}Radio');`)
+    }
+
+    arr.push(` 
+let arr = []
+let input = document.getElementById('input')
+let output = document.getElementById('output')
+let content = input.value.split("\\n")
+`)
+
+    arr.push(`    
+for (let i = 0; i < content.length; i++){
+`)
+
+
+    //JS OUTPUT VARIABLE DEFINITION
+    let counter = 0
+    for (let [key, value] of Object.entries(functions)) {
+
+      counter == 0
+        ? arr.push(`if (${key}Radio.checked){`)
+      : arr.push(`else if (${key}Radio.checked){`)
+      counter++
+
+      arr.push(`arr.push(${key}(content[i]))`)
+
+      arr.push(`}`)
+      arr.push("\n")
+    }
+    
+            arr.push(`   
+}
+`)
+    
+    
+            arr.push(`    
+output.value = arr.join("\\n")
+`)
+
+
+    arr.push(`    
+}
+`)
+
+    
+
+    
+    arr.push("<\/script>")
+
+    nut.innerText = arr.join("\n")
+
+
+  }
+
+
+
+
+
+</script>

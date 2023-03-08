@@ -1,0 +1,101 @@
+texthere
+
+<textarea rows="40" cols="100" id="input"></textarea>
+<textarea rows="40" cols="100" id="output"></textarea>
+
+
+<br>
+<button onclick="convert()">convert</button>
+<button onclick="reset()">reset</button>
+<br>
+<br>
+splitter: <input id = "splitter" type="text">
+<br>
+
+<input name="selector" type="radio" id="firstLetterUppercaseRadio">firstLetterUppercase
+<input name="selector" type="radio" id="toLowerCaseRadio">toLowerCase
+<input name="selector" type="radio" id="toUpperCaseRadio">toUpperCase
+<input name="selector" type="radio" id="stringWrapperRadio">stringWrapper
+<br>
+
+
+<script>
+
+function reset(){
+input.value = ""
+output.value = ""
+}
+
+
+function convert(){
+
+function firstLetterUppercase(str){
+let firstLetter = str[0].toUpperCase()
+let restOfWord = str.slice(1)
+let stringFinal = `${firstLetter}${restOfWord}`
+return stringFinal
+}
+
+
+function toLowerCase(str){
+let stringFinal = str.toLowerCase()
+return stringFinal
+}
+
+
+function toUpperCase(str){
+let stringFinal = str.toUpperCase()
+return stringFinal
+}
+
+
+function stringWrapper(str){
+let stringFinal = `"${str}"`
+return stringFinal
+}
+
+
+let firstLetterUppercaseRadio = document.getElementById('firstLetterUppercaseRadio');
+let toLowerCaseRadio = document.getElementById('toLowerCaseRadio');
+let toUpperCaseRadio = document.getElementById('toUpperCaseRadio');
+let stringWrapperRadio = document.getElementById('stringWrapperRadio');
+
+let arr = []
+let input = document.getElementById('input')
+let output = document.getElementById('output')
+let splitter = document.getElementById('splitter')
+let content = input.value.split("\n")
+
+
+for (let i = 0; i < content.length; i++){
+
+if (firstLetterUppercaseRadio.checked){
+arr.push(firstLetterUppercase(content[i]))
+}
+
+
+else if (toLowerCaseRadio.checked){
+arr.push(toLowerCase(content[i]))
+}
+
+
+else if (toUpperCaseRadio.checked){
+arr.push(toUpperCase(content[i]))
+}
+
+
+else if (stringWrapperRadio.checked){
+arr.push(stringWrapper(content[i]))
+}
+
+
+
+}
+
+
+output.value = arr.join("\n")
+
+
+}
+
+</script>

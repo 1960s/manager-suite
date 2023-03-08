@@ -1,0 +1,151 @@
+<button onclick=run()>texthere</button>
+<br>
+<span id="nut">texthere</span>
+
+
+<script>
+
+  function run(){
+
+    let main = `diameter	1 * diameterInput.value	function imperialFoot(strutImperial){	let fractionLimit = 32
+radius	diameter*0.5	return Math.trunc(strutImperial)	
+height	radius	}	
+strutA	(radius*0.54653)		
+strutB	(radius*0.61803)	function imperialInchDecimal(strutImperial, strutFoot){	
+perimeter	strutB*10	let strutInchFootDecimal = strutImperial - strutFoot	
+baseArea	10 * (strutB*strutB) / ( 4 * Math.tan( (Math.PI/10) ) )	return strutInchFootDecimal * 12	
+conduitHub	1 * conduitHubInput.value	}	
+strutACustom	conduitHub+strutA		
+strutBCustom	conduitHub+strutB	function imperialInch(imperialInchDecimal){	
+conduitHubInch	1 * conduitHubInchInput.value	return  Math.trunc(imperialInchDecimal)	
+conduitHubImperial	conduitHubInch/12	}	
+strutAImperial	conduitHubImperial+strutA		
+strutBImperial	conduitHubImperial+strutB	function imperialFraction(strutInchDecimal, strutInch){	
+strutAFoot	imperialFoot(strutAImperial)	let strutFractionDecimal = strutInchDecimal - strutInch	
+strutAInchDecimal	imperialInchDecimal(strutAImperial, strutAFoot)	let strutFractionDecimalRaw = strutFractionDecimal * fractionLimit 	
+strutAInch	imperialInch(strutAInchDecimal)	return  Math.round(strutFractionDecimalRaw)	
+strutAFraction	imperialFraction(strutAInchDecimal, strutAInch)	}	
+strutANumerator	reduceToNumerator(strutAFraction, fractionLimit)		
+strutADenomenator	reduceToDenomenator(strutAFraction, fractionLimit) 	     function reduceToNumerator(numerator, denominator){ 	
+		var gcd = function gcd(a,b){	
+		return b ? gcd(b, a%b) : a;	
+		};	
+		gcd = gcd(numerator,denominator);	
+		return [numerator/gcd];	
+		}	
+			
+		function reduceToDenomenator(numerator, denominator){ 	
+		var gcd = function gcd(a,b){	
+		return b ? gcd(b, a%b) : a;	
+		};	
+		gcd = gcd(numerator,denominator);	
+		return [denominator/gcd];	
+		}	`    
+
+    let names = []
+    let formulas = []
+    let functions = []
+    let variables = []
+
+
+
+    main = main.split("\n")
+
+    //let list = [names, formulas]
+
+
+    main.forEach(function (el, i) {
+      main[i] = el.split("\t")
+      if (main[i][0]) names.push(main[i][0])
+      if (main[i][1])  formulas.push(main[i][1])
+       functions.push(main[i][2])
+      if (main[i][3]) variables.push(main[i][3])
+    })
+
+
+    let nut = document.getElementById("nut")
+
+    let arr = []
+
+    //names = names.split("\n")
+    // formulas = formulas.split("\n")
+
+
+    //HTML INPUT
+    for (let i = 0; i < names.length; i++){
+
+      names[i] == "diameter" 
+          || names[i] == "conduitHub" 
+          || names[i] == "conduitHubInch"
+        ? arr.push(`${names[i][0].toUpperCase()}${names[i].slice(1)}: <input id="${names[i]}Input" type="number"> <br>`)
+        : arr.push(`${names[i][0].toUpperCase()}${names[i].slice(1)}: <input id="${names[i]}Input" type="number" readonly> <br>`)
+
+    }
+
+    arr.push("\n")
+    arr.push("<script>")
+    arr.push(`
+document.addEventListener('DOMContentLoaded', WireUpEvents);
+
+function WireUpEvents() {
+
+diameterInput.addEventListener('input', geodesicCalc);
+conduitHubInchInput.addEventListener('input', geodesicCalc);
+conduitHubInput.addEventListener('input', geodesicCalc);
+}
+`)
+    arr.push(`function geodesicCalc() {`)
+ arr.push("\n")
+
+    //FUNCTION DEFINITION
+    for (let i = 0; i < functions.length; i++){
+      arr.push(`${functions[i]}`)
+    }
+
+    arr.push("\n")
+
+
+    //VARIABLE DEFINITION
+    for (let i = 0; i < variables.length; i++){
+      arr.push(`${variables[i]}`)
+    }
+
+    arr.push("\n")
+
+
+    //HTML INPUT DEFINITION
+    for (let i = 0; i < names.length; i++){
+      arr.push(`let ${names[i]}Input = document.getElementById('${names[i]}Input');`)
+    }
+
+    arr.push("\n")
+
+
+    //HTML INPUT DEFINITION    
+    for (let i = 0; i < names.length; i++){
+      arr.
+      push(`let ${names[i]} = ${formulas[i]}`)
+    }
+    arr.push("\n")
+
+
+    //HTML INPUT DEFINITION
+    for (let i = 0; i < names.length; i++){
+      arr.push(`${names[i]}Input.value = ${names[i]}`)
+    }
+
+
+    arr.push(`}`)
+    arr.push("<\/script>")
+
+
+    nut.innerText = arr.join("\n")
+
+
+  }
+
+
+
+
+
+</script>

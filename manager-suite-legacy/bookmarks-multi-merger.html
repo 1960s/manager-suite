@@ -1,0 +1,160 @@
+<input type="file" id="fileInput" multiple>
+
+<button id="fileJS" onclick="handleFiles(fileInput, test)">Merge Bookmarks</button>
+<button id="DOWNLOAD" onclick="saveTextAsFile('html', arrSet.join('\n'))">DOWNLOAD</button>
+<button id="DOWNLOAD" onclick="saveTextAsFile('txt', duplicate.sort().join('\n'))">dups</button>
+
+
+<script>
+
+   let fileInput = document.getElementById("fileInput")
+
+
+    let arrSet = []
+let duplicate = []
+let headers = []
+    let regex = new RegExp(`HREF="(.*?)"`)
+    let regexHead = new RegExp(`HREF="(.*?)"`)
+//JS SECTION
+
+  function test(bookmarkPage){
+
+    let bookmarks = bookmarkPage
+ //console.log(bookmarks)
+    str = bookmarks.split("\n")
+
+   
+    // console.log(str)
+
+    for (let i = 0; i < str.length; i++){
+
+
+      if (str[i].includes("<H3") && !str[i].includes("PERSONAL_TOOLBAR_FOLDER") ){
+        arrSet.push(`</DL><p>
+${str[i]}
+<DL><p>`)
+//headers.push(str[i].match(regexHead) )
+      }
+
+
+      else if (str[i].includes("HREF=")){
+        let site = str[i].match(regex)     
+
+
+        let arr2 = arrSet.flat(3).join()
+
+        if (!arr2.includes(site[1])){
+          arrSet.push(str[i])    
+        }
+
+
+      }
+
+
+    }
+
+  }
+
+
+ 
+//FILE SAVING
+
+
+
+  function saveTextAsFile(type, contents){      
+    var textToWrite = contents;
+    var textToWrite = textToWrite.replace(/\n/g, "\r\n");
+    var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+    var fileNameToSaveAs = `bookmarksMerged.${type}`; //name file here
+
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = `bookmarksMerged`;//<--custom change, find out meaning
+
+    window.URL = window.URL || window.webkitURL;
+
+    downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+
+  }
+
+  function destroyClickedElement(event){
+    document.body.removeChild(event.target);
+  }
+
+
+
+//Getting files
+
+
+  function handleFiles(input, func) {
+
+    let arr = []
+
+
+    for (let i = 0; i < input.files.length; i++) {
+
+      let reader = new FileReader()
+
+      reader.readAsText(input.files[i])
+
+      reader.onload = function() {
+func(reader.result)
+
+      }
+
+    }
+
+  }
+
+
+
+    
+/*
+
+
+    
+// don't use i as counter variable
+for (let i = 0; i < repeatCount; i += 1) {
+  setTimeout(
+    () => {
+      saveTextAsFile(webPageTitle, page)
+    },
+    i * 200 // Delay download every 200ms
+  );
+}
+
+
+
+
+        if (i == input.files.length - 1) {
+ const repeatCount = 20;
+
+arr.forEach(function (el){func(el[0], el[1])})
+
+for (let i = 0; i < repeatCount; i += 1) {
+  setTimeout(
+    () => {
+      saveTextAsFile(webPageTitle, page)
+    },
+    i * 200 // Delay download every 200ms
+  );
+}
+
+
+
+
+}
+*/
+
+</script>
+
+
+
+
+

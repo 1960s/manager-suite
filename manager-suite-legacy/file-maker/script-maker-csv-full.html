@@ -1,0 +1,275 @@
+<button onclick=run()>texthere</button>
+<br>
+<span id="nut">texthere</span>
+
+
+<script>
+
+  function run(){
+
+    let main = `diameter	let fractionLimit = 32	radius	diameter*0.5	strutA		function convertDecimalToWhole(fullNum, supraNum, conversionNum){	imperial
+conduitHub	let footToInch = 12	height	radius			let decimalNum = fullNum - supraNum	metric
+pipeDiameter	let cmToMm = 10	strutA	(radius*0.54653)			return decimalNum * conversionNum	custom
+	let meterToCm = 100	strutB	(radius*0.61803)			}	
+		perimeter	strutB*10				
+		baseArea	10 * (strutB*strutB) / ( 4 * Math.tan( (Math.PI/10) ) )			function imperialFraction(strutInchDecimal, strutInch){	
+						let strutFractionDecimal = strutInchDecimal - strutInch	
+						let strutFractionDecimalRaw = strutFractionDecimal * fractionLimit 	
+						return  Math.round(strutFractionDecimalRaw)	
+						}	
+							
+						     function reduceToNumerator(numerator, denominator){ 	
+						var gcd = function gcd(a,b){	
+						return b ? gcd(b, a%b) : a;	
+						};	
+						gcd = gcd(numerator,denominator);	
+						return [numerator/gcd];	
+						}	
+							
+						function reduceToDenomenator(numerator, denominator){ 	
+						var gcd = function gcd(a,b){	
+						return b ? gcd(b, a%b) : a;	
+						};	
+						gcd = gcd(numerator,denominator);	
+						return [denominator/gcd];	
+						}	
+							
+							
+						function pipeDiameterConvert(outerDiameter) {	
+						let circumference = outerDiameter*Math.PI;	
+						let flattenedWidth = circumference/2;	
+						let rad = 62.7* Math.PI/180;      	
+						let flattenedLength = flattenedWidth/2*(Math.tan(rad));	
+						return flattenedLength     	
+						}	
+						//HubLength + flattenedLength = totalLength //get values from document	
+							
+							
+							
+							
+						/* Custom Pipe Gauge */         	
+						        function pipeGaugeToBoltLength(pipeGauge) {	
+						            	
+						 let boltLength = pipeGauge*12;               	
+						 //*12 = gauge is flattened making x2 and x6 struts intersecting	
+						return boltLength	
+						}	
+							
+						function strutAddHubLength(hubLength, strut){	
+						return hubLength + strut	
+						}	
+							
+						function convertCustom(strut, conduitHub = 0){	
+						let strutFinal = conduitHub + strut	
+						return strutFinal	
+						}	
+							
+							
+						function convertImperial(strut, conduitHub = 0){	
+						let conduitHubImperial = conduitHub/12	
+						let strutImperial = conduitHubImperial + strut	
+						let strutFoot = Math.trunc(strutImperial)	
+						let strutInchDecimal = convertDecimalToWhole(strutImperial, strutFoot, footToInch)	
+						let strutInch = Math.trunc(strutInchDecimal)	
+						let strutFraction = imperialFraction(strutInchDecimal, strutInch)	
+						let strutNumerator = reduceToNumerator(strutFraction, fractionLimit)	
+						let strutDenomenator = reduceToDenomenator(strutFraction, fractionLimit)	
+						let strutFinal = \`\${strutFoot} feet \${strutInch} inches \${strutNumerator}/\${strutDenomenator}\`	
+						return strutFinal	
+						}	
+							
+						function convertMetric(strut, conduitHub = 0){	
+						let conduitHubMetric = conduitHub/1000	
+						let strutMetric = conduitHubMetric + strut	
+						let strutMeter = Math.trunc(strutMetric)	
+						let strutCmDecimal = convertDecimalToWhole(strutMetric, strutMeter, meterToCm)	
+						let strutCm = Math.trunc(strutCmDecimal)	
+						let strutMmDecimal = convertDecimalToWhole(strutCmDecimal, strutCm, cmToMm)	
+						let strutMm = Math.round(strutMmDecimal)	
+						let strutFinal = \`\${strutMeter} meters \${strutCm} cm \${strutMm} mm\`	
+						return strutFinal	
+						}	`
+
+
+    let inputs = []
+    let constants = []
+    let midputs = []
+    let midValues = []
+    let outputs = []
+    let outValues = []
+    let functions = []
+    let buttons = []
+
+
+    main = main.split("\n")
+
+
+    main.forEach(function (el, i) {
+      main[i] = el.split("\t")
+      if (main[i][0]) inputs.push(main[i][0])
+      if (main[i][1])  constants.push(main[i][1])
+      if (main[i][2]) midputs.push(main[i][2])
+      if (main[i][3]) midValues.push(main[i][3])
+      if (main[i][4])  outputs.push(main[i][4])
+      if (main[i][5])  outValues.push(main[i][5])
+      if (main[i][7])  buttons.push(main[i][7])
+      functions.push(main[i][6])
+
+    })
+
+
+    let nut = document.getElementById("nut")
+
+    let arr = []
+
+    //HTML INPUTS
+    for (let i = 0; i < inputs.length; i++){
+      arr.push(`${inputs[i][0].toUpperCase()}${inputs[i].slice(1)}: <input id="${inputs[i]}Input" type="number" min="0" 
+placeholder="enter ${inputs[i]} here" 
+step="1"> <br>`)
+    }
+
+    //BUTTONS
+    for (let i = 0; i < buttons.length; i++){
+      i == 0
+      ? arr.push(`<input type="radio" name="lengthStandard" id="${buttons[i]}Radio" checked>${buttons[i]}`)
+      : arr.push(`<input type="radio" name="lengthStandard" id="${buttons[i]}Radio">${buttons[i]}`)
+    }
+
+
+    //HTML OUTPUTS
+    for (let i = 0; i < outputs.length; i++){
+      arr.push(`${outputs[i][0].toUpperCase()}${outputs[i].slice(1)}: <input id="${outputs[i]}Input" type="text" readonly> <br>`)
+    }
+
+
+    arr.push("\n")
+    arr.push("<script>")
+    arr.push(`
+document.addEventListener('DOMContentLoaded', WireUpEvents);
+
+function WireUpEvents() {`)
+
+    for (let i = 0; i < inputs.length; i++){
+      arr.push(`${inputs[i]}Input.addEventListener('input', geodesicCalc);`)
+    }
+
+    arr.push(`}`)
+
+    arr.push("\n")
+
+    
+    arr.push(`let reseter = document.querySelectorAll('input[name="lengthStandard"]')
+
+    reseter.forEach(function(userItem) {
+      userItem.addEventListener('change', reset)
+    });
+
+  function reset() {
+
+    let input = document.getElementsByTagName("input");
+
+    for (i = 0; i < input.length; i++) {
+      
+      if(input[i].type == "text" 
+         || input[i].type == "number" ){
+        input[i].value = ""
+      }
+
+    }
+  } 
+
+`)
+    
+    
+    arr.push(`function geodesicCalc() {`)
+    arr.push("\n")
+
+    //CONSTANTS DEFINITION
+    for (let i = 0; i < constants.length; i++){
+      arr.push(`${constants[i]}`)
+    }
+
+    arr.push("\n")
+
+
+    //FUNCTION DEFINITION
+    for (let i = 0; i < functions.length; i++){
+      arr.push(`${functions[i]}`)
+    }
+
+    arr.push("\n")
+
+
+    //JS INPUT DEFINITION
+    for (let i = 0; i < inputs.length; i++){
+      arr.push(`let ${inputs[i]}Input = document.getElementById('${inputs[i]}Input');`)
+    }
+
+    arr.push("\n")
+
+    //JS OUTPUT DEFINITION
+    for (let i = 0; i < outputs.length; i++){
+      arr.push(`let ${outputs[i]}Input = document.getElementById('${outputs[i]}Input');`)
+    }
+
+
+    arr.push("\n")
+
+
+    //JS INPUT VARIABLE DEFINITION    
+    for (let i = 0; i < inputs.length; i++){
+      arr.push(`let ${inputs[i]} = 1 * ${inputs[i]}Input.value`)
+    }
+
+    arr.push("\n")
+
+    //JS MIDPUT VARIABLE DEFINITION    
+    for (let i = 0; i < midputs.length; i++){
+      arr.push(`let ${midputs[i]} = ${midValues[i]}`)
+    }
+
+    arr.push("\n")
+
+    //JS OUTPUT VARIABLE DEFINITION    
+    for (let i = 0; i < buttons.length; i++){
+
+      i == 0 
+        ? arr.push(`${buttons[i]}Radio.checked ?`)
+      : i == buttons.length - 1
+        ? arr.push(`: `)
+      : arr.push(`: ${buttons[i]}Radio.checked ?`)
+
+
+      arr.push(`(`)
+      for (let j = 0; j < outputs.length; j++){
+
+        i > 1
+          ? arr.push(`${outputs[j]}Input.value = convert${buttons[i][0].toUpperCase()}${buttons[i].slice(1)}(${outputs[j]}, conduitHub)`)
+        
+        : arr.push(`${outputs[j]}Input.value = convert${buttons[i][0].toUpperCase()}${buttons[i].slice(1)}(${outputs[j]}, conduitHub)`)
+      }
+      arr.push(`)`)
+
+
+    }
+
+    arr.push("\n")
+
+
+
+
+    arr.push(`}`)
+    arr.push("<\/script>")
+
+
+    nut.innerText = arr.join("\n")
+
+
+  }
+
+
+
+
+
+</script>
